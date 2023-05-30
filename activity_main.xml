@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,31 +6,65 @@
     android:padding="16dp"
     tools:context=".MainActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="起始时间："
+        android:textSize="20sp"
+        android:textStyle="bold"
+        />
+
     <EditText
         android:id="@+id/startTimeEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="开始时间"
-        android:inputType="datetime"/>
+        android:inputType="datetime"
+        android:hint="点击选择起始时间" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="结束时间："
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        />
 
     <EditText
         android:id="@+id/endTimeEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="结束时间"
-        android:inputType="datetime"/>
+        android:inputType="datetime"
+        android:hint="点击选择结束时间" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="选择输出单位："
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp" />
+
+    <Spinner
+        android:id="@+id/unitSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/units" />
 
     <Button
         android:id="@+id/calculateButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="计算"/>
+        android:text="计算时间间隔"
+        android:layout_marginTop="16dp" />
 
     <TextView
         android:id="@+id/resultTextView"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:textSize="18sp"/>
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center"/>
 
 </LinearLayout>
