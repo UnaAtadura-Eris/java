@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private Spinner unitSpinner;
     private TextView resultTextView;
 
-    private String[] units = {"年", "月", "天", "小时", "分钟", "秒", "周+天", "全部"};
+    private String[] units = {"全部", "周+天","年", "月", "天", "小时", "分钟", "秒" };
     private boolean[] unitSelections = {false, false, false, false, false, false, false, false};
 
     @Override
@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         startTimeEditText = findViewById(R.id.startTimeEditText);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
         String currentTime = dateFormat.format(new Date());
+        Toast.makeText(MainActivity.this, currentTime, Toast.LENGTH_LONG).show();
         // 将当前时间设置为EditText的默认文本
         startTimeEditText.setText(currentTime);
         endTimeEditText = findViewById(R.id.endTimeEditText);
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         calculateButton = findViewById(R.id.calculateButton);
         unitSpinner = findViewById(R.id.unitSpinner);
         resultTextView = findViewById(R.id.resultTextView);
+
 
         startTimeEditText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,45 +150,45 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 0; i < unitSelections.length; i++) {
                         if (unitSelections[i]) {
                             switch (i) {
-                                case 0: // 年
-//                                    if (years > 0) {
-                                        resultBuilder.append(yearDifference).append("年 ");
-//                                    }
-                                    break;
-                                case 1: // 月
-//                                    if (months > 0) {
-                                        resultBuilder.append(monthDifference).append("月 ");
-//                                    }
-                                    break;
-                                case 2: // 天
-//                                    if (days > 0) {
-                                        resultBuilder.append(days).append("天 ");
-//                                    }
-                                    break;
-                                case 3: // 小时
-//                                    if (hours > 0) {
-                                        resultBuilder.append(hours).append("小时 ");
-//                                    }
-                                    break;
-                                case 4: // 分钟
-//                                    if (minutes > 0) {
-                                        resultBuilder.append(minutes).append("分钟 ");
-//                                    }
-                                    break;
-                                case 5: // 秒
+                                case 0: // 全部
 //                                    if (seconds > 0) {
-                                        resultBuilder.append(seconds).append("秒 ");
+                                    resultBuilder.append(all);
 //                                    }
                                     break;
-                                case 6: // 周+天
+                                case 1: // 周+天
 //                                    if (seconds > 0) {
 //                                    resultBuilder.append(weekDifference).append("周 ");
                                     resultBuilder.append(weekDifference).append("周").append(days%7).append("天");
 //                                    }
                                     break;
-                                case 7: // 周+天
+                                case 2: // 年
+//                                    if (years > 0) {
+                                        resultBuilder.append(yearDifference).append("年 ");
+//                                    }
+                                    break;
+                                case 3: // 月
+//                                    if (months > 0) {
+                                        resultBuilder.append(monthDifference).append("月 ");
+//                                    }
+                                    break;
+                                case 4: // 天
+//                                    if (days > 0) {
+                                        resultBuilder.append(days).append("天 ");
+//                                    }
+                                    break;
+                                case 5: // 小时
+//                                    if (hours > 0) {
+                                        resultBuilder.append(hours).append("小时 ");
+//                                    }
+                                    break;
+                                case 6: // 分钟
+//                                    if (minutes > 0) {
+                                        resultBuilder.append(minutes).append("分钟 ");
+//                                    }
+                                    break;
+                                case 7: // 秒
 //                                    if (seconds > 0) {
-                                    resultBuilder.append(all);
+                                        resultBuilder.append(seconds).append("秒 ");
 //                                    }
                                     break;
                             }
