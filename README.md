@@ -41,6 +41,35 @@ Toast.LENGTH_SHORT 是Toast的持续时间，表示短时期显示。你也可�
 show() 方法用于显示Toast消息。
           
           
+          要设置 Android Studio 中应用程序的图标、启动图像和背景图像，可以按照以下步骤进行操作：
+
+图标设置：
+
+在 Android Studio 的项目视图中，导航到 "res" 文件夹。
+找到 "mipmap" 文件夹，在其中添加应用程序的图标文件。通常，应该在不同的 mipmap 文件夹中添加不同尺寸的图标文件以适配不同的设备。
+然后，打开 "AndroidManifest.xml" 文件，在 <application> 标签中添加或更新 android:icon 属性，指定应用程序的图标资源。
+在资源名称中使用 @mipmap/图标文件名 的格式引用图标文件，例如：android:icon="@mipmap/app_icon"。
+启动图像设置：
+
+在 Android Studio 的项目视图中，导航到 "res" 文件夹。
+找到 "drawable" 文件夹，在其中添加应用程序的启动图像文件。
+在 AndroidManifest.xml 文件中，打开 <activity> 标签，并为该活动指定一个主题。
+在 android:theme 属性中，指定一个主题，例如：android:theme="@style/AppTheme"。
+打开 res/values/styles.xml 文件，并在其中定义一个名为 "AppTheme" 的主题。
+在主题中使用 windowBackground 属性，指定启动图像的资源文件。例如：
+xml
+Copy code
+<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="android:windowBackground">@drawable/launch_image</item>
+</style>
+背景图像设置：
+
+在 Android Studio 的项目视图中，导航到 "res" 文件夹。
+找到 "drawable" 文件夹，在其中添加应用程序的背景图像文件。
+在布局文件中，找到要设置背景图像的视图元素，例如 <LinearLayout> 或 <RelativeLayout>。
+使用 android:background 属性，指定背景图像的资源文件。例如：android:background="@drawable/background_image"。
+          
+          
           
           
           
