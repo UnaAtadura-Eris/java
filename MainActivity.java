@@ -11,9 +11,11 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
+//import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.os.Handler;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -25,16 +27,24 @@ import org.joda.time.Years;
 import org.joda.time.Months;
 import org.joda.time.Weeks;
 
-import java.text.ParseException;
+//import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import android.content.Context;
+import android.graphics.Typeface;
+import android.util.AttributeSet;
+
+import androidx.appcompat.widget.AppCompatTextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText startTimeEditText;
-    private EditText endTimeEditText;
+//    private EditText startTimeEditText;
+//    private EditText endTimeEditText;
     private Button calculateButton;
     private Spinner unitSpinner;
     private TextView resultTextView;
@@ -46,31 +56,72 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        startTimeEditText = findViewById(R.id.startTimeEditText);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-        String currentTime = dateFormat.format(new Date());
-        Toast.makeText(MainActivity.this, currentTime, Toast.LENGTH_LONG).show();
-        // 将当前时间设置为EditText的默认文本
+        EditText startDateEditText = findViewById(R.id.startDateEditText);
+        EditText startTimeEditText = findViewById(R.id.startTimeEditText);
+        EditText endDateEditText = findViewById(R.id.endDateEditText);
+        EditText endTimeEditText = findViewById(R.id.endTimeEditText);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        String currentDate = dateFormat.format(new Date());
+        String currentTime = timeFormat.format(new Date());
+        startDateEditText.setText(currentDate);
         startTimeEditText.setText(currentTime);
-        endTimeEditText = findViewById(R.id.endTimeEditText);
+        endDateEditText.setText(currentDate);
         endTimeEditText.setText(currentTime);
         calculateButton = findViewById(R.id.calculateButton);
         unitSpinner = findViewById(R.id.unitSpinner);
         resultTextView = findViewById(R.id.resultTextView);
 
 
+/*        DateTimeFormatter format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+       DateTime targetDateTime = format.parseDateTime("1995-12-19 11:23:24");
+       onlineTimeTextView.setText(calculateAll(targetDateTime,DateTime.now()));
+       定期更新在线时间
+   */
+
+
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+        DateTime targetDateTime = formatter.parseDateTime("1995-12-19 11:23:24");
+        TextView onlineTimeTextView = findViewById(R.id.onlineTimeTextView);
+        Handler handler = new Handler();
+        // 创建一个 Runnable 对象用于更新在线时间
+        Runnable updateTimeRunnable = new Runnable() {
+            @Override
+            public void run() {
+                onlineTimeTextView.setText(calculateAll(targetDateTime,DateTime.now()));
+                // 每隔一秒更新一次
+                handler.postDelayed(this, 1000);
+            }
+        };
+        // 开始更新在线时间
+        handler.post(updateTimeRunnable);
+
+
         startTimeEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDateTimePicker(startTimeEditText);
+                showTimePicker(startTimeEditText);
             }
         });
 
         endTimeEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDateTimePicker(endTimeEditText);
+                showTimePicker(endTimeEditText);
+            }
+        });
+
+        startDateEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePicker(startDateEditText);
+            }
+        });
+
+        endDateEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePicker(endDateEditText);
             }
         });
 
@@ -98,16 +149,20 @@ public class MainActivity extends AppCompatActivity {
         calculateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String startTimeString = startTimeEditText.getText().toString();
-                String endTimeString = endTimeEditText.getText().toString();
+                String CstartDate = startDateEditText.getText().toString();
+                String CstartTime = startTimeEditText.getText().toString();
+                String startTimeString = CstartDate + " " + CstartTime;
+                String CendDate = endDateEditText.getText().toString();
+                String CendTime = endTimeEditText.getText().toString();
+                String endTimeString = CendDate + " " + CendTime;
 
-                DateTimeFormatter format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
+                DateTimeFormatter format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
                 try {
                     DateTime startTime = format.parseDateTime(startTimeString);
                     DateTime endTime = format.parseDateTime(endTimeString);
 
                     Interval interval = new Interval(startTime, endTime);
-                    Period period = new Period(startTime, endTime);
+
                     long seconds = interval.toDuration().getStandardSeconds();
                     long minutes = interval.toDuration().getStandardMinutes();
                     long hours = interval.toDuration().getStandardHours();
@@ -132,27 +187,13 @@ public class MainActivity extends AppCompatActivity {
 //                    int seconds = period.getSeconds();
 
 
-                    // 获取差异的年、月、日、小时、分钟和秒
-                    int Pyears = period.getYears();
-                    int Pmonths = period.getMonths();
-                    int Pweeks = period.getWeeks();
-                    int Pdays = period.getDays();
-                    int Phours = period.getHours();
-                    int Pminutes = period.getMinutes();
-                    int Pseconds = period.getSeconds();
-
-                    // 拼接差异结果
-                    String all = Pyears + "年" + Pmonths + "月" + Pweeks + "周"+ Pdays + "天" + Phours + "小时" + Pminutes + "分钟" + Pseconds + "秒";
-//                    String all = String.valueOf(period);
-
-
                     StringBuilder resultBuilder = new StringBuilder();
                     for (int i = 0; i < unitSelections.length; i++) {
                         if (unitSelections[i]) {
                             switch (i) {
                                 case 0: // 全部
 //                                    if (seconds > 0) {
-                                    resultBuilder.append(all);
+                                    resultBuilder.append(calculateAll(startTime,endTime));
 //                                    }
                                     break;
                                 case 1: // 周+天
@@ -208,35 +249,84 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void showDateTimePicker(final EditText editText) {
+    private void showDatePicker(final EditText editText) {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        // 更新EditText文本为选择的日期时间
-                        calendar.set(Calendar.YEAR, year);
-                        calendar.set(Calendar.MONTH, monthOfYear);
-                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                        calendar.set(Calendar.MINUTE, minute);
+                // 更新日期选择框的文本
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, monthOfYear);
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-                        String dateTime = format.format(calendar.getTime());
-                        editText.setText(dateTime);
-                    }
-                }, hour, minute, true);
-                timePickerDialog.show();
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                String date = format.format(calendar.getTime());
+                editText.setText(date);
+
+//                updateDateTimeEditText(); // 更新日期和时间合并框的文本
             }
         }, year, month, day);
         datePickerDialog.show();
     }
+
+    private void showTimePicker(final EditText editText) {
+        final Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                // 更新时间选择框的文本
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendar.set(Calendar.MINUTE, minute);
+
+                SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+                String time = format.format(calendar.getTime());
+                editText.setText(time);
+
+//                updateDateTimeEditText(); // 更新日期和时间合并框的文本
+            }
+        }, hour, minute, true);
+        timePickerDialog.show();
+    }
+        public static String calculateAll(DateTime startTime, DateTime endTime) {
+            // 获取差异的年、月、日、小时、分钟和秒
+            Period period = new Period(startTime, endTime);
+            int Pyears = period.getYears();
+            int Pmonths = period.getMonths();
+            int Pweeks = period.getWeeks();
+            int Pdays = period.getDays();
+            int Phours = period.getHours();
+            int Pminutes = period.getMinutes();
+            int Pseconds = period.getSeconds();
+            // 拼接差异结果
+            String all = Pyears + "年" + Pmonths + "月" + Pweeks + "周"+ Pdays + "天" + Phours + "小时" + Pminutes + "分钟" + Pseconds + "秒";
+            return all;
+        }
 }
+
+
+
+
+/*
+    TextView onlineTimeTextView = findViewById(R.id.onlineTimeTextView);
+    SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+    long startTime = "1995-12-19 11:23:24";
+
+// 创建计时器并设置计时器任务
+   Timer timer = new Timer();
+       timer.scheduleAtFixedRate(new TimerTask() {
+        @Override
+        public void run() {
+            updateOnlineTime();
+        }
+    }, 0, 1000); // 每秒更新一次
+
+*/
+
+
