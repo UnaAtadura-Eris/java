@@ -1,0 +1,131 @@
+package com.example.medicarecord
+
+import android.content.Context
+import android.widget.Button
+import android.widget.Spinner
+import android.widget.TextView
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.list.listItems
+
+
+private lateinit var resultTextView: TextView
+private lateinit var context: Context
+
+fun faRe() {
+    val bansuizhengzhuang = mapOf(
+        "体格检查" to "咽部粘膜未见异常，双侧扁桃体无肿大。双肺叩诊清音，呼吸规整，双肺呼吸音清晰，双侧肺未闻及干、湿性罗音，无胸膜摩擦音。",
+        "其他不适" to "",
+        "皮肤黏膜出血" to "",
+        "皮疹" to "",
+        "咯血" to "",
+        "尿频、尿急、尿痛" to "",
+        "腹痛腹泻" to "",
+        "胸痛胸闷" to "",
+        "头痛头晕" to "",
+        "肌肉关节痛" to "",
+        "咽痛" to "",
+        "咳嗽咳痰" to "痰多色白易咯出"
+    )
+    val zhengzhuangtedian = mapOf(
+        "热峰出现时间" to listOf("热峰出现时间在上午", "热峰出现时间在中午", "热峰出现时间在午后", "热峰出现时间在夜间"),
+        "发热的特点" to listOf("呈持续性低热", "呈稽留热", "呈弛张热", "呈间歇热", "呈波状热", "呈回归热", "呈不规则热"),
+        "发热程度" to listOf("发热，最高温度达？℃", "高热，最高温度达？℃", "低热，最高温度达？℃"),
+        "起病诱因、病因" to listOf("xx前无明显诱因出现", "xx前感冒后出现", "xx前受凉后出现", "xx前创伤后出现"),
+    )
+    generateMedicalRecord("通用问诊：是否到过医院，做过哪些检查和治疗，治疗经过及药疗评价,饮食、睡眠、大小便及体重变化、传染病史，慢性病史，手术、外伤史，食物、药物过敏史，无吸烟、饮酒、药物等嗜好。")
+    yiBanXuanXiang(bansuizhengzhuang)
+    zhengZhuangTeDian(zhengzhuangtedian)
+}
+
+fun zhengZhuangTeDian(sentenceOptions: Map<String, List<String>>) {
+    // 循环遍历 sentenceOptions 字典
+    for ((symptom, options) in sentenceOptions) {
+        // 准备 showDialog 函数的参数
+        val args = mutableListOf(symptom)
+        args.addAll(options)
+
+        // 使用可变参数调用 showDialog 函数
+        showDialog(*args.toTypedArray())
+    }
+}
+
+fun showDialog(vararg options: String) {
+    val items = options.toList()
+    MaterialDialog(this)
+        .title(text = items.firstOrNull())
+        .listItems(
+            items = items.drop(1),
+            waitForPositiveButton = false
+        ) { dialog, index, text ->
+            // 将选择的文字追加到屏幕上
+            generateMedicalRecord("$text，")
+        }
+        .show()
+}
+
+fun yiBanXuanXiang(questions: Map<String, String>) {
+    for ((questionText, zhuiJiaQuestion) in questions) {
+        MaterialDialog(android.this)
+            .title(text = questionText + "?")
+            .listItems(
+                items = listOf("是", "否", "不详", "跳过"),
+                waitForPositiveButton = true
+            ) { dialog, index, text ->
+                when (index) {
+                    0 -> {
+                        // 选择是，追加文字
+                        generateMedicalRecord("有$questionText，")
+                        zhuiJiaXuanXiang(zhuiJiaQuestion)
+                    }
+                    1 -> {
+                        // 选择否，跳过追加文字
+                        generateMedicalRecord("无$questionText，")
+                    }
+                    2 -> {
+                        // 选择不详，跳过追加文字
+                        generateMedicalRecord(questionText+"不详")
+                    }
+                    3 -> {
+                        // 选择跳过，直接跳到下一个问题
+                    }
+                }
+                dialog.dismiss()
+            }
+            .show()
+    }
+}
+
+ fun zhuiJiaXuanXiang(zhuiJiaQuestion: String) {
+    val combinedQuestionText = zhuiJiaQuestion
+    if (combinedQuestionText.isNotEmpty()) {
+        MaterialDialog(this)
+            .title(text = combinedQuestionText)
+            .listItems(
+                items = listOf("追加", "不追加"),
+                waitForPositiveButton = false
+            ) { dialog, index, text ->
+                when (index) {
+                    0 -> {
+                        // 选择是，追加文字
+                        generateMedicalRecord("$combinedQuestionText，")
+                        // askVertigo()
+                    }
+                    1 -> {
+                        // 选择否，跳过追加文字
+                        // generateMedicalRecord("$combinedQuestionText，")
+                        // askVertigo()
+                    }
+                }
+                dialog.dismiss()
+            }
+            .show()
+    }
+}
+
+private fun generateMedicalRecord(symptom: String) {
+    resultTextView.append(symptom)
+}
+
+private fun showResult() {
+    val result = resultTextView.text.toString()
+}
